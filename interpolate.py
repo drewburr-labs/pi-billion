@@ -4,10 +4,11 @@
 # print(sys.getsizeof(""))
 
 import psycopg2
+from psycopg2.extras import execute_values
 from multiprocessing import Pool
 
 SIZE = 5
-PROC_COUNT = 45
+PROC_COUNT = 32
 
 
 def main():
@@ -48,6 +49,7 @@ def process_data(segment):
     cur = conn.cursor()
 
     subarr = list()
+    argslist = list()
 
     print("processing...")
 
@@ -57,12 +59,16 @@ def process_data(segment):
         # Skip publishing when still initializing
         if len(subarr) == SIZE:
             try:
-                cur.execute(
-                    f"INSERT INTO pi_values (number) VALUES ({''.join(subarr)})")
-                conn.commit()
+                argslist.append([''.join(subarr)])
                 subarr.pop(0)
             except (Exception, psycopg2.errors.UniqueViolation):
                 pass
+
+            if len(argslist) > 1000:
+                execute_values(
+                    cur, "INSERT INTO pi_values (number) VALUES %s", argslist)
+                conn.commit()
+                argslist.clear()
 
     cur.close()
     conn.close()
