@@ -74,6 +74,43 @@ def process_data(segment):
     conn.close()
 
 
+class Tree():
+    def __init__(self):
+        self._nodelist = [None] * 10  # base 10 value
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return self.next()
+
+    def next(self):
+        """
+        Recursive generator.
+        Yields stored values; ordered from smallest to largest.
+        """
+        # Check all nodes in the list
+        for i, node in enumerate(self._nodelist):
+            if node:
+                # Continue if there is data downstream
+                while val := node.next():
+                    yield i + val
+
+        # No values left
+        yield None
+
+    def insert(self, argslist):
+        val = argslist.pop(0)
+        node = self._nodelist[val]
+
+        if argslist:
+            if node is None:
+                node = Tree()
+                self._nodelist[val] = node
+
+            node.update(argslist)
+
+
 """
 SQLLite functions
 """
