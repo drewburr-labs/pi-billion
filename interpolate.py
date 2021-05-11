@@ -153,4 +153,5 @@ def initialize_db():
     conn.close()
 
 
-main()
+if __name__ == "main":
+    main()
