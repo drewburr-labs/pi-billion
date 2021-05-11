@@ -75,6 +75,14 @@ def process_data(segment):
 
 
 class Tree():
+    """
+    A base 10 tree, with each node notating values from most to least significant.
+    The end of each branch chain is a boolean value, which notates if the chain followed is a number that was inserted into the tree.
+    When iterating:
+        When a value is found, the boolean value at the end of the branch chain is set to False.
+        If every branch on a node is found to be empty, it is set to False to avoid excessive itaration.
+    """
+
     def __init__(self, depth):
         base = 10  # Each branch should divide into 10
         if depth > 1:
