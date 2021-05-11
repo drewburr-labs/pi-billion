@@ -101,6 +101,8 @@ class Tree():
                         if val != None:
                             return f"{i}{val}"
                         else:
+                            # No values were found
+                            self._nodelist[i] = False
                             return None
 
         raise StopIteration
