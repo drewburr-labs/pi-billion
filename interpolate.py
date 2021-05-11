@@ -75,40 +75,49 @@ def process_data(segment):
 
 
 class Tree():
-    def __init__(self):
-        self._nodelist = [None] * 10  # base 10 value
+    def __init__(self, depth):
+        base = 10  # Each branch should divide into 10
+        if depth > 1:
+            self._nodelist = list()
+            for _ in range(base):
+                self._nodelist.append(Tree(depth - 1))
+        elif depth == 1:
+            self._nodelist = [False] * base
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        return self.next()
+        for i, subnode in enumerate(self._nodelist):
+            # End is reached, no match
+            if subnode != False:
+                # End is reached, with match
+                if subnode == True:
+                    self._nodelist[i] = False
+                    return i
+                # End has not been reached
+                else:
+                    for val in subnode:
+                        if val != None:
+                            return f"{i}{val}"
+                        else:
+                            return None
 
-    def next(self):
-        """
-        Recursive generator.
-        Yields stored values; ordered from smallest to largest.
-        """
-        # Check all nodes in the list
-        for i, node in enumerate(self._nodelist):
-            if node:
-                # Continue if there is data downstream
-                while val := node.next():
-                    yield i + val
+        raise StopIteration
 
-        # No values left
-        yield None
+    def insert(self, item: str):
+        argslist = list(item)
+        val = int(argslist.pop(0))
+        next_node = self._nodelist[val]
 
-    def insert(self, argslist):
-        val = argslist.pop(0)
-        node = self._nodelist[val]
+        # When the end has been reached
+        if next_node is True or next_node is False:
+            if len(argslist) > 1:
+                raise Exception("Tree bounds exceeded: ", argslist)
 
-        if argslist:
-            if node is None:
-                node = Tree()
-                self._nodelist[val] = node
-
-            node.update(argslist)
+            self._nodelist[val] = True
+        else:
+            next_node.insert(argslist)
 
 
 """
