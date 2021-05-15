@@ -4,8 +4,12 @@
 # print(sys.getsizeof(""))
 
 import psycopg2
+import gc
 from psycopg2.extras import execute_values
 from multiprocessing import Pool
+
+# Enable garbage collection
+gc.enable()
 
 SIZE = 5
 PROC_COUNT = 32
@@ -15,13 +19,19 @@ def main():
     test_db_connection()
     initialize_db()
 
-    pi_data = split_data(get_pi_data(), PROC_COUNT)
+    pi_data = split_data(get_pi_data(), PROC_COUNT*500)
+
+    print("Data prepped..")
+
+    print("Starting processing..")
 
     with Pool(PROC_COUNT) as p:
         p.map(process_data, pi_data)
 
-        # for segment in pi_data:
-        #     process_data(segment)
+    print("Processing mapped..")
+
+    # for segment in pi_data:
+    #     process_data(segment)
 
 
 """
@@ -51,8 +61,6 @@ def process_data(segment):
     subarr = list()
     argslist = list()
 
-    print("processing...")
-
     for c in segment:
         subarr.append(c)
 
@@ -69,6 +77,12 @@ def process_data(segment):
                     cur, "INSERT INTO pi_values (number) VALUES %s", argslist)
                 conn.commit()
                 argslist.clear()
+
+    if len(argslist) > 0:
+        execute_values(
+            cur, "INSERT INTO pi_values (number) VALUES %s", argslist)
+        conn.commit()
+        argslist.clear()
 
     cur.close()
     conn.close()
@@ -172,5 +186,5 @@ def initialize_db():
     conn.close()
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     main()
