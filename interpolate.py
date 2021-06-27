@@ -16,17 +16,19 @@ PROC_COUNT = 32
 
 
 def main():
-    test_db_connection()
-    initialize_db()
+    # test_db_connection()
+    # initialize_db()
 
-    pi_data = split_data(get_pi_data(), PROC_COUNT*500)
+    data_tree = generate_tree(get_pi_data())
+
+    # pi_data = split_data(get_pi_data(), PROC_COUNT)
 
     print("Data prepped..")
 
     print("Starting processing..")
 
-    with Pool(PROC_COUNT) as p:
-        p.map(process_data, pi_data)
+    # with Pool(PROC_COUNT) as p:
+    #     p.map(commit_data, pi_data)
 
     print("Processing mapped..")
 
@@ -45,7 +47,7 @@ def get_pi_data():
     pi_data = f.read()
     f.close()
 
-    return pi_data
+    return pi_data[0:5000000]
 
 
 def split_data(arr, parts):
@@ -54,7 +56,7 @@ def split_data(arr, parts):
     return [arr[i*length // parts: ((i+1)*length // parts)+offset] for i in range(parts)]
 
 
-def process_data(segment):
+def commit_data(segment):
     conn = connect_to_db()
     cur = conn.cursor()
 
@@ -86,6 +88,18 @@ def process_data(segment):
 
     cur.close()
     conn.close()
+
+
+def generate_tree(pi_data):
+    # Initialize subarr
+    subarr = list(pi_data[0:SIZE-1])
+    tree = Tree(SIZE)
+    tasks = []
+
+    for c in pi_data[SIZE-1:]:
+        subarr.append(c)
+        tree.insert(subarr.copy())
+        subarr.pop(0)
 
 
 class Tree():
@@ -187,4 +201,11 @@ def initialize_db():
 
 
 if __name__ == "__main__":
-    main()
+    import cProfile
+    import pstats
+
+    with cProfile.Profile() as pr:
+        main()
+
+    stats = pstats.Stats(pr)
+    stats.dump_stats(filename='profile.prof')
