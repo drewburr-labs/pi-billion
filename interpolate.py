@@ -143,19 +143,22 @@ class Tree():
 
         raise StopIteration
 
-    def insert(self, item: str):
-        argslist = list(item)
-        val = int(argslist.pop(0))
-        next_node = self._nodelist[val]
+    def insert(self, data):
+        """
+        Responsible for inserting data into the tree.
+        'data' is a list that must match the size of the tree.
+        """
+        current_node = self
 
-        # When the end has been reached
-        if next_node is True or next_node is False:
-            if len(argslist) > 1:
-                raise Exception("Tree bounds exceeded: ", argslist)
+        for item in data:
+            val = int(item)
+            next_node = current_node._nodelist[val]
 
-            self._nodelist[val] = True
-        else:
-            next_node.insert(argslist)
+            # When the end has been reached
+            if next_node is True or next_node is False:
+                current_node._nodelist[val] = True
+            else:
+                current_node = next_node
 
 
 """
