@@ -7,6 +7,7 @@ import psycopg2
 import gc
 from psycopg2.extras import execute_values
 from multiprocessing import Pool
+from collections import deque
 
 # Enable garbage collection
 gc.enable()
@@ -47,7 +48,7 @@ def get_pi_data():
     pi_data = f.read()
     f.close()
 
-    return pi_data[0:5000000]
+    return pi_data[0:10000000]
 
 
 def split_data(arr, parts):
@@ -91,15 +92,14 @@ def commit_data(segment):
 
 
 def generate_tree(pi_data):
-    # Initialize subarr
-    subarr = list(pi_data[0:SIZE-1])
+    # Initialize
+    subdata = deque(list(pi_data[0:SIZE]), SIZE)
     tree = Tree(SIZE)
-    tasks = []
 
-    for c in pi_data[SIZE-1:]:
-        subarr.append(c)
-        tree.insert(subarr.copy())
-        subarr.pop(0)
+    for c in pi_data[SIZE:]:
+        tree.insert(subdata)
+        subdata.popleft()
+        subdata.append(c)
 
 
 class Tree():
