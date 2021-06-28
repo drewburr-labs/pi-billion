@@ -48,7 +48,7 @@ def get_pi_data():
     pi_data = f.read()
     f.close()
 
-    return pi_data[0:len(pi_data)//100]
+    return pi_data[0:len(pi_data)//10]
 
 
 def split_data(arr, parts):
@@ -152,17 +152,18 @@ class Tree():
         """
         Responsible for inserting data into the tree.
         'data' is a list that must match the size of the tree.
+        In order to save processing time, no inputs are validated.
         """
-        current_node = self
+        next_node = self
 
         for val in data:
+            # We're setting current_node here in order to preserve the value on the last loop
+            # This is done to remove the otherwise-required if-condition. Every second counts when you're doing it a billion times
+            current_node = next_node
             next_node = current_node._nodelist[val]
 
-            # When the end has been reached
-            if next_node is True or next_node is False:
-                current_node._nodelist[val] = True
-            else:
-                current_node = next_node
+        # When the end has been reached
+        current_node._nodelist[val] = True
 
 
 """
