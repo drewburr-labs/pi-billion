@@ -6,6 +6,10 @@ This repo is me attempting to build something that will answer this question in 
 
 The first billion digits of pi are avilable through [MIT's site](https://stuff.mit.edu/afs/sipb/contrib/pi/#:~:text=One%20billion%20digits%20of%20%CF%80,in%20the%20file%20pi%2Dbillion.). Be sure to drop the decimal point for this to work correctly.
 
-## External requirements
+## Building and executing
 
-This project uses a locally running Postgres server. I'm currently using a Postgres server running in a Docker container.
+Cython and Python 3 are the only current dependencies. I'm running Python 3.8.5.
+
+To build, execute `./build.sh`
+
+To execute, execute `./execute.sh`
