@@ -1,7 +1,6 @@
 #!/usr/bin/python3
-
-# import sys
-# print(sys.getsizeof(""))
+# cython: profile=False
+# Open profile with: snakeviz profile.prof
 
 import psycopg2
 import gc
@@ -17,6 +16,7 @@ PROC_COUNT = 32
 
 
 def main():
+
     # test_db_connection()
     # initialize_db()
 
@@ -209,11 +209,4 @@ def initialize_db():
 
 
 if __name__ == "__main__":
-    import cProfile
-    import pstats
-
-    with cProfile.Profile() as pr:
-        main()
-
-    stats = pstats.Stats(pr)
-    stats.dump_stats(filename='profile.prof')  # Open with snakeviz
+    main()

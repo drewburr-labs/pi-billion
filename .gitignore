@@ -1,3 +1,6 @@
 pi-billion.txt
 __pycache__
 .vscode
+build/*
+*.c
+*.so
